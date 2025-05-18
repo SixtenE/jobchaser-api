@@ -15,10 +15,36 @@ datasource db {
 }
 
 model User {
-    id        String   @id @default(cuid())
-    name      String
-    email     String   @unique
+    id        String     @id @default(cuid())
+    email     String     @unique
     password  String
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+    Bookmark  Bookmark[]
+}
+
+model Job {
+    id        String     @id @default(cuid())
+    company   String
+    logo      String
+    position  String
+    role      String
+    level     String
+    postedAt  String
+    contract  String
+    location  String
+    languages String[]
+    tools     String[]
+    Bookmark  Bookmark[]
+}
+
+model Bookmark {
+    id        Int      @id @default(autoincrement())
+    userId    String
+    jobId     String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    user User @relation(fields: [userId], references: [id])
+    job  Job  @relation(fields: [jobId], references: [id])
 }
