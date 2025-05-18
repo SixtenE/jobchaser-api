@@ -1,9 +1,13 @@
 import type { NextFunction, Request, Response } from "express";
 import { z } from "zod";
-import { verify } from "jsonwebtoken";
+import { type JwtPayload, verify } from "jsonwebtoken";
+
+export interface RequestWithUser extends Request {
+  user?: JwtPayload;
+}
 
 export async function authMiddleware(
-  req: Request,
+  req: RequestWithUser,
   res: Response,
   next: NextFunction
 ) {
@@ -26,7 +30,7 @@ export async function authMiddleware(
   }
 
   try {
-    verify(token, process.env.JWT_SECRET as string);
+    req.user = verify(token, process.env.JWT_SECRET as string) as JwtPayload;
 
     next();
   } catch {
