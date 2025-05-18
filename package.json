@@ -7,7 +7,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "build": "pnpm migrate && pnpm generate && tsc",
+    "build": "tsc",
     "start": "node dist/index.js",
     "migrate": "prisma migrate deploy",
     "generate": "prisma generate",
