@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
 import { compare, hash } from "bcrypt";
-import { sign } from "jsonwebtoken";
+import { sign, verify } from "jsonwebtoken";
 import { prisma } from "../utils/prisma";
 
 export async function signIn(req: Request, res: Response) {
@@ -47,11 +47,12 @@ export async function signIn(req: Request, res: Response) {
     },
     process.env.JWT_SECRET as string,
     {
-      expiresIn: "24h",
+      expiresIn: "7d",
     }
   );
 
   res.status(200).json({
+    user: { id: user.id, email: user.email },
     token,
   });
 }
@@ -82,12 +83,43 @@ export async function signUp(req: Request, res: Response) {
 
   const hashedPassword = await hash(parsedBody.data.password, 10);
 
-  const user = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email: parsedBody.data.email,
       password: hashedPassword,
     },
   });
 
-  res.status(201).json(user);
+  res.status(201).json({
+    message: "User created successfully",
+  });
+}
+
+export async function verifyAuth(req: Request, res: Response) {
+  const parsedHeaders = z
+    .object({
+      authorization: z.string(),
+    })
+    .safeParse(req.headers);
+
+  if (!parsedHeaders.success) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
+  const token = parsedHeaders.data.authorization.split(" ")[1];
+
+  if (!token) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
+  try {
+    const user = verify(token, process.env.JWT_SECRET as string);
+
+    res.status(200).json(user);
+  } catch {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
 }

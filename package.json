@@ -7,12 +7,10 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "build": "pnpm migrate:deploy && tsc",
+    "build": "tsc",
     "start": "node dist/index.js",
-    "migrate:dev": "prisma migrate dev",
-    "migrate:deploy": "prisma migrate deploy && prisma generate",
-    "migrate:status": "prisma migrate status",
     "seed": "ts-node prisma/seed.ts",
+    "generate": "prisma generate",
     "dev": "nodemon",
     "lint": "eslint . --ext .ts"
   },
