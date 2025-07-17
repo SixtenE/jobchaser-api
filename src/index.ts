@@ -23,6 +23,6 @@ app.use(express.json());
 app.use("/api/auth", authRouter);
 app.use("/api/jobs", jobRouter);
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '::', () => {
   console.log(`Server is running on ${JSON.stringify(server.address())}`);
 });
